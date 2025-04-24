@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 class ShippingStatus(models.Model):
 
@@ -29,3 +30,14 @@ class Escalation(models.Model):
 
     def __str__(self):
         return f"{self.escalation_id} - {self.customer_name}"
+
+class ResolveIssue(models.Model):
+    escalation_id = models.CharField(max_length=10, primary_key=True)
+    customer_name = models.CharField(max_length=100)
+    resolution_type = models.EmailField()
+    resolution_note = models.CharField(max_length=100)
+    notify_customer = models.BooleanField(default=False)
+    resolved_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.escalation_id}"

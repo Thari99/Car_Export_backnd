@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.http import Http404
-from .models import ShippingStatus,Escalation
-from .serializers import ShippingStatusSerializer, EscalationSerializer
+from .models import ShippingStatus,Escalation,ResolveIssue
+from .serializers import ShippingStatusSerializer, EscalationSerializer,ResolvedIssueSerializer
 
 
 # ShippingStatus CRUD Views
@@ -122,6 +122,64 @@ class EscalationDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Delete an escalation by ID
+    def delete(self, request, pk):
+        record = self.get_object(pk)
+        record.delete()
+        return Response({"message": f"Escalation with id {pk} deleted successfully"}, status=status.HTTP_200_OK)
+
+# Resolve Issue CRUD Views
+class ResolveIssueList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # List all Resolve Issue ordered by creation time
+    def get(self, request):
+        allResolveIssue = ResolveIssue.objects.all().order_by('-resolved_at')
+        serializer = ResolvedIssueSerializer(allResolveIssue, many=True)
+        return Response(serializer.data)
+
+    # Create a new Resolve Issue record
+    def post(self, request):
+        serializer = ResolvedIssueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ResolveIssueDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    # Retrieve a specific resolved issue by primary key
+    def get_object(self, pk):
+        try:
+            return ResolveIssue.objects.get(pk=pk)
+        except ResolveIssue.DoesNotExist:
+            raise Http404
+
+    # View details of a specific Resolve Issue
+    def get(self, request, pk):
+        record = self.get_object(pk)
+        serializer = ResolvedIssueSerializer(record)
+        return Response(serializer.data)
+
+    # Full update (replace) of an Resolve Issue
+    def put(self, request, pk):
+        record = self.get_object(pk)
+        serializer = ResolvedIssueSerializer(record, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Partial update of an Resolve Issue
+    def patch(self, request, pk):
+        record = self.get_object(pk)
+        serializer = ResolvedIssueSerializer(record, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # Delete an Resolve Issue by ID
     def delete(self, request, pk):
         record = self.get_object(pk)
         record.delete()
