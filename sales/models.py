@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 
 class Quotation(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
     vehicle_model = models.CharField(max_length=100)
     color = models.CharField(max_length=50)
     quantity = models.IntegerField()

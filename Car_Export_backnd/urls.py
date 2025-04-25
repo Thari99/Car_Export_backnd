@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/customer-care/', include('customer_care.urls')),
     path('api/escalations/', include('customer_care.urls')),
     path('api/resolve-issue/', include('customer_care.urls')),
+    path('api/quotations/', include('sales.urls')),
     
 ]
