@@ -6,6 +6,8 @@ __pycache__/
 
 # Django
 db.sqlite3
+.media
+/media/
 *.log
 
 # React / Node
@@ -23,3 +25,5 @@ Thumbs.db
 
 # Git
 *.orig
+
+
